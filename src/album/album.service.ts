@@ -33,7 +33,7 @@ export class AlbumService {
 
   remove(id: string) {
     if (this.databaseService.albums.isAlbumExist(id)) {
-      return this.databaseService.albums.delete(id);
+      return this.databaseService.albumDelete(id);
     } else {
       throw new NotFoundException(`Album with ID: ${id} doesn't exist`);
     }
