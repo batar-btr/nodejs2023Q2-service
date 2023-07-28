@@ -33,7 +33,7 @@ export class ArtistService {
 
   remove(id: string) {
     if (this.databaseService.artists.isArtistExist(id)) {
-      return this.databaseService.artists.delete(id);
+      return this.databaseService.artistDelete(id);
     } else {
       throw new NotFoundException(`Artist with ID: ${id} doesn't exist`);
     }

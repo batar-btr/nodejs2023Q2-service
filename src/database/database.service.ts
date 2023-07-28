@@ -31,4 +31,30 @@ export class DatabaseService {
 
     this.albums.delete(id);
   }
+
+  artistDelete(id: string) {
+    const artistTracks = [...this.tracks.tracks.values()].filter(
+      ({ artistId }) => artistId === id,
+    );
+
+    const artistAlbums = [...this.albums.albums.values()].filter(
+      ({ artistId }) => artistId === id,
+    );
+
+    artistTracks.forEach(({ id }) => {
+      const track = this.tracks.tracks.get(id);
+      const updatedTrack = { ...track };
+      updatedTrack.artistId = null;
+      this.tracks.tracks.set(id, updatedTrack);
+    });
+
+    artistAlbums.forEach(({ id }) => {
+      const album = this.albums.albums.get(id);
+      const updatedAlbum = { ...album };
+      updatedAlbum.artistId = null;
+      this.albums.albums.set(id, updatedAlbum);
+    });
+
+    this.artists.delete(id);
+  }
 }
