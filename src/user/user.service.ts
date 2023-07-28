@@ -12,16 +12,16 @@ export class UserService {
   constructor(private readonly databaseService: DatabaseService) {}
 
   create(createUserDto: CreateUserDto) {
-    return this.databaseService.createUser(createUserDto);
+    return this.databaseService.users.createUser(createUserDto);
   }
 
   findAll() {
-    return this.databaseService.getAllUsers();
+    return this.databaseService.users.getAllUsers();
   }
 
   findOne(id: string) {
-    if (this.databaseService.isUserExist(id)) {
-      return this.databaseService.getUserById(id);
+    if (this.databaseService.users.isUserExist(id)) {
+      return this.databaseService.users.getUserById(id);
     } else {
       throw new NotFoundException(`User with ID: ${id} doesn't exist`);
     }
@@ -30,20 +30,20 @@ export class UserService {
   update(id: string, updatePasswordDto: UpdatePasswordDto) {
     const { oldPassword } = updatePasswordDto;
 
-    if (!this.databaseService.isUserExist(id)) {
+    if (!this.databaseService.users.isUserExist(id)) {
       throw new NotFoundException(`User with ID: ${id} doesn't exist`);
     }
 
-    if (!this.databaseService.isValidOldPass(id, oldPassword)) {
+    if (!this.databaseService.users.isValidOldPass(id, oldPassword)) {
       throw new ForbiddenException('Old password is wrong');
     }
 
-    return this.databaseService.updateUser(id, updatePasswordDto);
+    return this.databaseService.users.updateUser(id, updatePasswordDto);
   }
 
   remove(id: string) {
-    if (this.databaseService.isUserExist(id)) {
-      return this.databaseService.deleteUser(id);
+    if (this.databaseService.users.isUserExist(id)) {
+      return this.databaseService.users.deleteUser(id);
     } else {
       throw new NotFoundException(`User with ID: ${id} doesn't exist`);
     }
