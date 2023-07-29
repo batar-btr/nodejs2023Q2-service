@@ -16,6 +16,11 @@ import { UpdateFavDto } from './dto/update-fav.dto';
 export class FavsController {
   constructor(private readonly favsService: FavsService) {}
 
+  @Get()
+  getAllFavorites() {
+    return this.favsService.getAllFavorites();
+  }
+
   @Post('track/:id')
   @HttpCode(201)
   addTrack(@Param('id', ParseUUIDPipe) id: string) {
@@ -28,18 +33,27 @@ export class FavsController {
     return this.favsService.removeTrack(id);
   }
 
-  @Get()
-  findAll() {
-    return this.favsService.findAll();
+  @Post('album/:id')
+  @HttpCode(201)
+  addAlbum(@Param('id', ParseUUIDPipe) id: string) {
+    return this.favsService.addAlbum(id);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.favsService.findOne(+id);
+  @Delete('album/:id')
+  @HttpCode(204)
+  removeAlbum(@Param('id', ParseUUIDPipe) id: string) {
+    return this.favsService.removeAlbum(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFavDto: UpdateFavDto) {
-    return this.favsService.update(+id, updateFavDto);
+  @Post('artist/:id')
+  @HttpCode(201)
+  addArtist(@Param('id', ParseUUIDPipe) id: string) {
+    return this.favsService.addArtist(id);
+  }
+
+  @Delete('artist/:id')
+  @HttpCode(204)
+  removeArtist(@Param('id', ParseUUIDPipe) id: string) {
+    return this.favsService.removeArtist(id);
   }
 }

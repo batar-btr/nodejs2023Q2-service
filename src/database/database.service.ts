@@ -33,6 +33,8 @@ export class DatabaseService {
       this.tracks.tracks.set(id, updatedTrack);
     });
 
+    this.favs.albums = this.favs.albums.filter((albumsId) => albumsId !== id);
+
     this.albums.delete(id);
   }
 
@@ -59,7 +61,14 @@ export class DatabaseService {
       this.albums.albums.set(id, updatedAlbum);
     });
 
+    this.favs.artists = this.favs.artists.filter((artistId) => artistId !== id);
+
     this.artists.delete(id);
+  }
+
+  trackDelete(id: string) {
+    this.favs.tracks = this.favs.tracks.filter((tracksId) => tracksId !== id);
+    this.tracks.delete(id);
   }
 
   getAllFavorites(): FavoritesResponse {

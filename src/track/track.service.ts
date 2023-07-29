@@ -33,7 +33,7 @@ export class TrackService {
 
   remove(id: string) {
     if (this.databaseService.tracks.isTrackExist(id)) {
-      return this.databaseService.tracks.delete(id);
+      return this.databaseService.trackDelete(id);
     } else {
       throw new NotFoundException(`Track with ID: ${id} doesn't exist`);
     }

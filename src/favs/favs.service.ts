@@ -8,6 +8,10 @@ import { UnprocessableEntityException } from '@nestjs/common';
 export class FavsService {
   constructor(private readonly databaseService: DatabaseService) {}
 
+  getAllFavorites() {
+    return this.databaseService.getAllFavorites();
+  }
+
   addTrack(id: string) {
     if (this.databaseService.isTrackExist(id)) {
       return this.databaseService.favs.addTrack(id);
@@ -26,23 +30,39 @@ export class FavsService {
     }
   }
 
-  create(createFavDto: CreateFavDto) {
-    return 'This action adds a new fav';
+  addAlbum(id: string) {
+    if (this.databaseService.isAlbumExist(id)) {
+      return this.databaseService.favs.addAlbum(id);
+    } else {
+      throw new UnprocessableEntityException(
+        `Album with id: ${id} doesn't exist`,
+      );
+    }
   }
 
-  findAll() {
-    return this.databaseService.getAllFavorites();
+  removeAlbum(id: string) {
+    if (this.databaseService.favs.isAlbumInFavorites(id)) {
+      return this.databaseService.favs.deleteAlbum(id);
+    } else {
+      throw new NotFoundException(`Album with ID: ${id} is not in favorites`);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} fav`;
+  addArtist(id: string) {
+    if (this.databaseService.isArtistExist(id)) {
+      return this.databaseService.favs.addArtist(id);
+    } else {
+      throw new UnprocessableEntityException(
+        `Artist with id: ${id} doesn't exist`,
+      );
+    }
   }
 
-  update(id: number, updateFavDto: UpdateFavDto) {
-    return `This action updates a #${id} fav`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} fav`;
+  removeArtist(id: string) {
+    if (this.databaseService.favs.isArtistInFavorites(id)) {
+      return this.databaseService.favs.deleteArtist(id);
+    } else {
+      throw new NotFoundException(`Artist with ID: ${id} is not in favorites`);
+    }
   }
 }
