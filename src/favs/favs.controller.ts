@@ -2,15 +2,12 @@ import {
   Controller,
   Get,
   Post,
-  Body,
-  Patch,
   Param,
   Delete,
   ParseUUIDPipe,
   HttpCode,
 } from '@nestjs/common';
 import { FavsService } from './favs.service';
-import { UpdateFavDto } from './dto/update-fav.dto';
 
 @Controller('favs')
 export class FavsController {

@@ -1,6 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateFavDto } from './dto/create-fav.dto';
-import { UpdateFavDto } from './dto/update-fav.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { UnprocessableEntityException } from '@nestjs/common';
 
