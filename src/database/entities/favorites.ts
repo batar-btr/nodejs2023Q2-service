@@ -22,15 +22,12 @@ export class Favs implements Favorites {
 
   deleteTrack(id: string) {
     this.tracks = this.tracks.filter((trackId) => trackId !== id);
-    console.log(this.tracks);
   }
   deleteAlbum(id: string) {
     this.albums = this.albums.filter((albumId) => albumId !== id);
-    console.log(this.albums);
   }
   deleteArtist(id: string) {
     this.artists = this.artists.filter((artistId) => artistId !== id);
-    console.log(this.artists);
   }
 
   isTrackInFavorites(id: string): boolean {
