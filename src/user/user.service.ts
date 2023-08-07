@@ -4,7 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { DatabaseService } from 'src/database/database.service';
 import { PrismaService } from 'src/database/prisma.service';
 import { Prisma } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
@@ -12,10 +11,7 @@ import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
-  constructor(
-    private readonly databaseService: DatabaseService,
-    private readonly prismaService: PrismaService,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async create(createUserDto: Prisma.UserCreateInput) {
     const user = await this.prismaService.user.create({ data: createUserDto });

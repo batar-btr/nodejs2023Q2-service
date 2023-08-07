@@ -1,41 +1,50 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { DatabaseService } from 'src/database/database.service';
+import { PrismaService } from 'src/database/prisma.service';
 
 @Injectable()
 export class TrackService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
-  create(createTrackDto: CreateTrackDto) {
-    return this.databaseService.tracks.createTrack(createTrackDto);
+  async create(createTrackDto: CreateTrackDto) {
+    return await this.prismaService.track.create({ data: createTrackDto });
   }
 
-  findAll() {
-    return this.databaseService.tracks.getAllTracks();
+  async findAll() {
+    return await this.prismaService.track.findMany();
   }
 
-  findOne(id: string) {
-    if (this.databaseService.tracks.isTrackExist(id)) {
-      return this.databaseService.tracks.getTrackById(id);
+  async findOne(id: string) {
+    const track = await this.prismaService.track.findUnique({ where: { id } });
+
+    if (track) {
+      return track;
     } else {
       throw new NotFoundException(`Track with ID: ${id} doesn't exist`);
     }
   }
 
-  update(id: string, updateTrackDto: UpdateTrackDto) {
-    if (this.databaseService.tracks.isTrackExist(id)) {
-      return this.databaseService.tracks.updateTrack(id, updateTrackDto);
+  async update(id: string, updateTrackDto: UpdateTrackDto) {
+    const track = await this.prismaService.track.findUnique({ where: { id } });
+
+    if (track) {
+      return this.prismaService.track.update({
+        where: { id },
+        data: updateTrackDto,
+      });
     } else {
       throw new NotFoundException(`Track with ID: ${id} doesn't exist`);
     }
   }
 
-  remove(id: string) {
-    if (this.databaseService.tracks.isTrackExist(id)) {
-      return this.databaseService.trackDelete(id);
-    } else {
+  async remove(id: string) {
+    const track = await this.prismaService.track.findUnique({ where: { id } });
+
+    if (!track) {
       throw new NotFoundException(`Track with ID: ${id} doesn't exist`);
+    } else {
+      await this.prismaService.track.delete({ where: { id } });
     }
   }
 }

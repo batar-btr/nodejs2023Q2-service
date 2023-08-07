@@ -11,14 +11,37 @@ datasource db {
 }
 
 model User {
-  id          String   @id @default(uuid())
-  login       String
-  password    String
-  version     Int      @default(1)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt 
+  id        String   @id @default(uuid())
+  login     String
+  password  String
+  version   Int      @default(1) 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt 
 }
 
 model Track {
-  id String @id @default(uuid())
+  id        String   @id @default(uuid())
+  name      String
+  artistId  String?
+  albumId   String?
+  artist    Artist?  @relation(fields: [artistId], references: [id])
+  album     Album?   @relation(fields: [albumId], references: [id])
+  duration  Int
+}
+
+model Album {
+  id        String   @id @default(uuid())
+  name      String
+  year      Int
+  artistId  String?
+  artist    Artist?  @relation(fields: [artistId], references: [id])
+  tracks    Track[]
+}
+
+model Artist {
+  id      String   @id @default(uuid())
+  name    String
+  grammy  Boolean
+  tracks  Track[]
+  albums  Album[]
 }
