@@ -20,8 +20,10 @@ export class FavsController {
 
   @Post('track/:id')
   @HttpCode(201)
-  addTrack(@Param('id', ParseUUIDPipe) id: string) {
-    return this.favsService.addTrack(id);
+  async addTrack(@Param('id', ParseUUIDPipe) id: string) {
+    const result = await this.favsService.addTrack(id);
+    console.log(result);
+    return result;
   }
 
   @Delete('track/:id')
