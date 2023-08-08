@@ -1,41 +1,56 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
-import { DatabaseService } from 'src/database/database.service';
+import { PrismaService } from 'src/database/prisma.service';
 
 @Injectable()
 export class AlbumService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
-  create(createAlbumDto: CreateAlbumDto) {
-    return this.databaseService.albums.createAlbum(createAlbumDto);
+  async create(createAlbumDto: CreateAlbumDto) {
+    return await this.prismaService.album.create({ data: createAlbumDto });
   }
 
-  findAll() {
-    return this.databaseService.albums.getAllAlbums();
+  async findAll() {
+    return await this.prismaService.album.findMany();
   }
 
-  findOne(id: string) {
-    if (this.databaseService.albums.isAlbumExist(id)) {
-      return this.databaseService.albums.getAlbumById(id);
+  async findOne(id: string) {
+    const album = await this.prismaService.album.findUnique({
+      where: { id },
+    });
+
+    if (album) {
+      return album;
     } else {
       throw new NotFoundException(`Album with ID: ${id} doesn't exist`);
     }
   }
 
-  update(id: string, updateAlbumDto: UpdateAlbumDto) {
-    if (this.databaseService.albums.isAlbumExist(id)) {
-      return this.databaseService.albums.updateAlbum(id, updateAlbumDto);
+  async update(id: string, updateAlbumDto: UpdateAlbumDto) {
+    const album = await this.prismaService.album.findUnique({
+      where: { id },
+    });
+
+    if (album) {
+      return this.prismaService.album.update({
+        where: { id },
+        data: updateAlbumDto,
+      });
     } else {
       throw new NotFoundException(`Album with ID: ${id} doesn't exist`);
     }
   }
 
-  remove(id: string) {
-    if (this.databaseService.albums.isAlbumExist(id)) {
-      return this.databaseService.albumDelete(id);
-    } else {
+  async remove(id: string) {
+    const album = await this.prismaService.album.findUnique({
+      where: { id },
+    });
+
+    if (!album) {
       throw new NotFoundException(`Album with ID: ${id} doesn't exist`);
+    } else {
+      await this.prismaService.album.delete({ where: { id } });
     }
   }
 }

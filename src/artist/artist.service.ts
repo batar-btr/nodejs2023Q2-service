@@ -1,41 +1,56 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
-import { DatabaseService } from 'src/database/database.service';
+import { PrismaService } from 'src/database/prisma.service';
 
 @Injectable()
 export class ArtistService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
-  create(createArtistDto: CreateArtistDto) {
-    return this.databaseService.artists.createArtist(createArtistDto);
+  async create(createArtistDto: CreateArtistDto) {
+    return await this.prismaService.artist.create({ data: createArtistDto });
   }
 
-  findAll() {
-    return this.databaseService.artists.getAllArtists();
+  async findAll() {
+    return await this.prismaService.artist.findMany();
   }
 
-  findOne(id: string) {
-    if (this.databaseService.artists.isArtistExist(id)) {
-      return this.databaseService.artists.getArtistById(id);
+  async findOne(id: string) {
+    const artist = await this.prismaService.artist.findUnique({
+      where: { id },
+    });
+
+    if (artist) {
+      return artist;
     } else {
       throw new NotFoundException(`Artist with ID: ${id} doesn't exist`);
     }
   }
 
-  update(id: string, updateArtistDto: UpdateArtistDto) {
-    if (this.databaseService.artists.isArtistExist(id)) {
-      return this.databaseService.artists.updateArtist(id, updateArtistDto);
+  async update(id: string, updateArtistDto: UpdateArtistDto) {
+    const artist = await this.prismaService.artist.findUnique({
+      where: { id },
+    });
+
+    if (artist) {
+      return this.prismaService.artist.update({
+        where: { id },
+        data: updateArtistDto,
+      });
     } else {
-      throw new NotFoundException(`Artist with ID: ${id} doesn't exist`);
+      throw new NotFoundException(`Track with ID: ${id} doesn't exist`);
     }
   }
 
-  remove(id: string) {
-    if (this.databaseService.artists.isArtistExist(id)) {
-      return this.databaseService.artistDelete(id);
-    } else {
+  async remove(id: string) {
+    const artist = await this.prismaService.artist.findUnique({
+      where: { id },
+    });
+
+    if (!artist) {
       throw new NotFoundException(`Artist with ID: ${id} doesn't exist`);
+    } else {
+      await this.prismaService.artist.delete({ where: { id } });
     }
   }
 }
