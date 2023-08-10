@@ -27,6 +27,10 @@ RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=cache,target=/root/.npm \
     npm ci --omit=dev
 
+COPY prisma ./prisma/
+
+RUN npx prisma generate
+
 ################################################################################
 # Create a stage for building the application.
 FROM deps as build
@@ -59,6 +63,7 @@ COPY package.json .
 
 # Copy the production dependencies from the deps stage and also
 # the built application from the build stage into the image.
+COPY prisma ./prisma/
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/dist ./dist
 COPY doc ./doc
@@ -68,4 +73,4 @@ COPY doc ./doc
 EXPOSE 4000
 
 # Run the application.
-CMD npm run start:prod
+CMD npm run start:docker
