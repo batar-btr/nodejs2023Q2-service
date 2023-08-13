@@ -22,7 +22,6 @@ export class FavsController {
   @HttpCode(201)
   async addTrack(@Param('id', ParseUUIDPipe) id: string) {
     const result = await this.favsService.addTrack(id);
-    console.log(result);
     return result;
   }
 

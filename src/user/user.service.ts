@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { PrismaService } from 'src/database/prisma.service';
-import { Prisma } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
