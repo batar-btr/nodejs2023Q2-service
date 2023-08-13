@@ -5,6 +5,7 @@ services:
     restart: always
     volumes:
       - db-data:/var/lib/postgresql/data
+      - db-logs:/var/log/postgresql
     environment:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
@@ -45,6 +46,7 @@ services:
 
 volumes:
   db-data:
+  db-logs:
 
 networks:
   service-network:
