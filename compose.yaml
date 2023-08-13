@@ -17,9 +17,9 @@ services:
     healthcheck:
       # test: [ "CMD", "pg_isready","-h", "db", "-p", "5432"]
       test: [ "CMD", "pg_isready","-U", "postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      interval: ${HEALTH_CHECK_INTERVAL}
+      timeout: ${HEALTH_CHECK_TIMEOUT}
+      retries: ${HEALTH_CHECK_RETRIES}
     networks:
       - service-network
 
@@ -33,7 +33,7 @@ services:
       NODE_ENV: production
       DATABASE_URL: ${DATABASE_URL}
     ports:
-      - 4000:4000
+      - ${PORT}:${PORT}
     restart: always
     depends_on:
       db:
@@ -54,8 +54,8 @@ networks:
     ipam:
       driver: default
       config:
-      - subnet: 172.28.0.0/16
-        ip_range: 172.28.5.0/24
-        gateway: 172.28.5.254
+      - subnet: ${IPAM_CONFIG_SUBNET}
+        ip_range: ${IPAM_CONFIG_IP_RANGE}
+        gateway: ${IPAM_CONFIG_GATEWAY}
 
 
