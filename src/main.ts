@@ -6,11 +6,16 @@ import { OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { load } from 'js-yaml';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { Logger } from '@nestjs/common';
 
 const PORT = process.env.PORT || 4000;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const logger = new Logger('BOOT-STRAAAAP');
+
+  const app = await NestFactory.create(AppModule, {
+    logger: logger,
+  });
   app.useGlobalPipes(new ValidationPipe());
 
   const config = load(
@@ -20,5 +25,6 @@ async function bootstrap() {
   SwaggerModule.setup('doc', app, config);
 
   await app.listen(PORT);
+  logger.log('App listen on port 4000');
 }
 bootstrap();
