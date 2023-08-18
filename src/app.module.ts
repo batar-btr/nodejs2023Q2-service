@@ -10,6 +10,8 @@ import { FavsModule } from './favs/favs.module';
 import { PrismaModule } from './database/prisma.module';
 import { LoggerModule } from './logger/logger.module';
 import { LoggerMiddleware } from './logger/logger.middleware';
+import { AllExceptionsFilter } from './filters/custom-exeption.filter';
+import { APP_FILTER } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -23,7 +25,13 @@ import { LoggerMiddleware } from './logger/logger.middleware';
     FavsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -25,7 +25,7 @@ export class UserService {
   }
 
   async findAll() {
-    console.log('Hello');
+    throw new Error();
     return await this.prismaService.user.findMany();
   }
 

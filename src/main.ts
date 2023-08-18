@@ -16,7 +16,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: logger,
   });
+
   app.useGlobalPipes(new ValidationPipe());
+
+  // app.useGlobalFilters(new AllExceptionsFilter(app.get(HttpAdapterHost)));
 
   const config = load(
     readFileSync(join(__dirname, '..', 'doc/api.yaml'), 'utf8'),

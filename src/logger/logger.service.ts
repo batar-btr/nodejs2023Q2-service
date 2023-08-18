@@ -1,8 +1,13 @@
 import { ConsoleLogger, LoggerService, Injectable } from '@nestjs/common';
+import * as path from 'node:path';
 
 @Injectable()
 export class MyCustomLoggingService implements LoggerService {
   private readonly logger = new ConsoleLogger('Custom-Logger');
+  private readonly logPath: string;
+  constructor() {
+    this.logPath = path.join(__dirname, '..', '..', 'logs.txt');
+  }
 
   log(message: string) {
     this.logger.log(`[Custom Log] - ${message}`);
