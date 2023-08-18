@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { ConsoleLogger, LoggerService, Injectable } from '@nestjs/common';
-import { appendFile, stat, rename } from 'fs/promises';
+import { appendFile, stat, rename, writeFile } from 'fs/promises';
 import * as path from 'node:path';
 import { ConfigService } from '@nestjs/config';
 
@@ -25,10 +25,21 @@ export class MyCustomLoggingService implements LoggerService {
     this.logger.log(`[Custom Log] - ${message}`);
     const { size } = await stat(this.logPath);
 
-    const maxSize = this.configService.get<string>('MAX_LOGS_SIZE');
+    const maxSize = +this.configService.get<string>('MAX_LOGS_SIZE');
 
-    console.log(size);
-    console.log(maxSize);
+    if (size >= maxSize) {
+      await rename(
+        this.logPath,
+        path.join(
+          __dirname,
+          '..',
+          '..',
+          'custom-logs',
+          `logs.${Date.now()}.txt`,
+        ),
+      );
+      await writeFile(this.logPath, '');
+    }
 
     await appendFile(this.logPath, message);
   }
