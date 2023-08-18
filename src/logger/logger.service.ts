@@ -1,13 +1,16 @@
+import 'dotenv/config';
 import { ConsoleLogger, LoggerService, Injectable } from '@nestjs/common';
 import { appendFile, stat, rename } from 'fs/promises';
 import * as path from 'node:path';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class MyCustomLoggingService implements LoggerService {
   private readonly logger = new ConsoleLogger('Custom-Logger');
   private readonly logPath: string;
   private readonly errorPath: string;
-  constructor() {
+
+  constructor(private configService: ConfigService) {
     this.logPath = path.join(__dirname, '..', '..', 'custom-logs', 'logs.txt');
     this.errorPath = path.join(
       __dirname,
@@ -20,6 +23,13 @@ export class MyCustomLoggingService implements LoggerService {
 
   async log(message: string) {
     this.logger.log(`[Custom Log] - ${message}`);
+    const { size } = await stat(this.logPath);
+
+    const maxSize = this.configService.get<string>('MAX_LOGS_SIZE');
+
+    console.log(size);
+    console.log(maxSize);
+
     await appendFile(this.logPath, message);
   }
 
