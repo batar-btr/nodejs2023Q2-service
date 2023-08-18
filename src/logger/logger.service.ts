@@ -1,20 +1,31 @@
 import { ConsoleLogger, LoggerService, Injectable } from '@nestjs/common';
+import { appendFile, stat, rename } from 'fs/promises';
 import * as path from 'node:path';
 
 @Injectable()
 export class MyCustomLoggingService implements LoggerService {
   private readonly logger = new ConsoleLogger('Custom-Logger');
   private readonly logPath: string;
+  private readonly errorPath: string;
   constructor() {
-    this.logPath = path.join(__dirname, '..', '..', 'logs.txt');
+    this.logPath = path.join(__dirname, '..', '..', 'custom-logs', 'logs.txt');
+    this.errorPath = path.join(
+      __dirname,
+      '..',
+      '..',
+      'custom-logs',
+      'errors.txt',
+    );
   }
 
-  log(message: string) {
+  async log(message: string) {
     this.logger.log(`[Custom Log] - ${message}`);
+    await appendFile(this.logPath, message);
   }
 
-  error(message: string) {
+  async error(message: string) {
     this.logger.error(`[Custom Error] - ${message}`);
+    await appendFile(this.errorPath, message);
   }
 
   warn(message: string) {
