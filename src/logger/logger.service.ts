@@ -27,26 +27,26 @@ export class MyCustomLoggingService implements LoggerService {
 
     const maxSize = +this.configService.get<string>('MAX_LOGS_SIZE');
 
-    if (size >= maxSize) {
-      const isExist = async (path: string) =>
-        await access(path)
-          .then(() => true)
-          .catch(() => false);
+    // if (size >= maxSize) {
+    //   const isExist = async (path: string) =>
+    //     await access(path)
+    //       .then(() => true)
+    //       .catch(() => false);
 
-      if (await isExist(this.logPath)) {
-        await rename(
-          this.logPath,
-          path.join(
-            __dirname,
-            '..',
-            '..',
-            'custom-logs',
-            `logs.${Date.now()}.txt`,
-          ),
-        );
-        await writeFile(this.logPath, '');
-      }
-    }
+    //   if (await isExist(this.logPath)) {
+    //     await rename(
+    //       this.logPath,
+    //       path.join(
+    //         __dirname,
+    //         '..',
+    //         '..',
+    //         'custom-logs',
+    //         `logs.${Date.now()}.txt`,
+    //       ),
+    //     );
+    //     await writeFile(this.logPath, '');
+    //   }
+    // }
 
     await appendFile(this.logPath, message);
   }
