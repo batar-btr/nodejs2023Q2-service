@@ -1,6 +1,5 @@
 import {
   ForbiddenException,
-  HttpStatus,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -9,7 +8,7 @@ import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/database/prisma.service';
-import { jwtConstants } from './constants';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +16,7 @@ export class AuthService {
     private userService: UserService,
     private readonly prismaService: PrismaService,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   async signup(authSignupDto: AuthSignupDto) {
@@ -45,11 +45,11 @@ export class AuthService {
 
       const accessToken = await this.jwtService.signAsync(payload, {
         expiresIn: '12h',
-        secret: jwtConstants.secret,
+        secret: this.configService.get<string>('TOKEN_SECRET'),
       });
       const refreshToken = await this.jwtService.signAsync(payload, {
         expiresIn: '24h',
-        secret: jwtConstants.secret,
+        secret: this.configService.get<string>('TOKEN_SECRET'),
       });
 
       return {
@@ -72,11 +72,11 @@ export class AuthService {
 
     const access_token = await this.jwtService.signAsync(payload, {
       expiresIn: '12h',
-      secret: jwtConstants.secret,
+      secret: this.configService.get<string>('TOKEN_SECRET'),
     });
     const refresh_token = await this.jwtService.signAsync(payload, {
       expiresIn: '24h',
-      secret: jwtConstants.secret,
+      secret: this.configService.get<string>('TOKEN_SECRET'),
     });
 
     return {
