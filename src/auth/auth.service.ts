@@ -9,6 +9,7 @@ import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/database/prisma.service';
+import { jwtConstants } from './constants';
 
 @Injectable()
 export class AuthService {
@@ -41,15 +42,46 @@ export class AuthService {
 
     if (isValidPass) {
       const payload = { sub: user.id, username: user.login };
+
+      const accessToken = await this.jwtService.signAsync(payload, {
+        expiresIn: '12h',
+        secret: jwtConstants.secret,
+      });
+      const refreshToken = await this.jwtService.signAsync(payload, {
+        expiresIn: '24h',
+        secret: jwtConstants.secret,
+      });
+
       return {
-        access_token: await this.jwtService.signAsync(payload),
+        accessToken,
+        refreshToken,
       };
     } else {
       throw new ForbiddenException();
     }
   }
 
-  refresh() {
-    return 'refresh';
+  async refresh({ refreshToken }) {
+    const { sub } = await this.jwtService.verifyAsync(refreshToken);
+
+    const user = await this.userService.findOne(sub);
+
+    if (!user) throw new UnauthorizedException();
+
+    const payload = { sub: user.id, username: user.login };
+
+    const access_token = await this.jwtService.signAsync(payload, {
+      expiresIn: '12h',
+      secret: jwtConstants.secret,
+    });
+    const refresh_token = await this.jwtService.signAsync(payload, {
+      expiresIn: '24h',
+      secret: jwtConstants.secret,
+    });
+
+    return {
+      access_token,
+      refresh_token,
+    };
   }
 }
