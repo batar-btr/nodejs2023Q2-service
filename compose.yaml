@@ -1,0 +1,63 @@
+services:
+  db:
+    container_name: db
+    image: postgres
+    restart: always
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - db-logs:/var/log/postgresql
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    expose:
+      - ${DB_PORT}
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    healthcheck:
+      # test: [ "CMD", "pg_isready","-h", "db", "-p", "5432"]
+      test: [ "CMD", "pg_isready","-U", "postgres"]
+      interval: ${HEALTH_CHECK_INTERVAL}
+      timeout: ${HEALTH_CHECK_TIMEOUT}
+      retries: ${HEALTH_CHECK_RETRIES}
+    networks:
+      - service-network
+
+  server:
+    build:
+      context: .
+      target: dev
+      args:
+        - DATABASE_URL=${DATABASE_URL}
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL}
+    env_file:
+      - .env
+    ports:
+      - ${PORT}:${PORT}
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./src:/usr/src/app/src
+      - /usr/src/app/node_modules
+    networks:
+      - service-network
+
+volumes:
+  db-data:
+  db-logs:
+
+networks:
+  service-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: ${IPAM_CONFIG_SUBNET}
+        ip_range: ${IPAM_CONFIG_IP_RANGE}
+        gateway: ${IPAM_CONFIG_GATEWAY}
+
+
